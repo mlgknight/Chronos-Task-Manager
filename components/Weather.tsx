@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import {
 	StyleSheet,
 	Text,
@@ -8,15 +9,12 @@ import {
 } from 'react-native';
 import {
 	SafeAreaView,
-	SafeAreaProvider,
 	useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import * as React from 'react';
-import WeatherDisplay from '../components/WeatherDisplay';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
 import * as Location from 'expo-location';
 import { API_KEY } from '@env';
+import WeatherDisplay from '../components/WeatherDisplay';
 
 const currentTime = new Date().getHours();
 const isNightTime = currentTime >= 18 || currentTime < 6;
@@ -25,13 +23,15 @@ const nightImage = require('../assets/images/night.jpg');
 const dayImage = require('../assets/images/day.jpg');
 
 export default function Weather() {
-	const insets = useSafeAreaInsets();
+	const { top } = useSafeAreaInsets();
 	const [weatherData, setWeatherData] = useState<any>(null);
 	const [location, setLocation] = useState<{
 		latitude: number;
 		longitude: number;
 	} | null>(null);
 	const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+	console.log(weatherData);
 
 	useEffect(() => {
 		const fetchWeatherData = async (latitude: number, longitude: number) => {
@@ -68,44 +68,34 @@ export default function Weather() {
 	}, []);
 
 	return (
-		<SafeAreaProvider>
-			<SafeAreaView style={styles.safeArea}>
-				<StatusBar
-					translucent
-					backgroundColor="transparent"
-					barStyle={isNightTime ? 'light-content' : 'dark-content'}
-				/>
-				<ImageBackground
-					source={isNightTime ? nightImage : dayImage}
-					style={styles.background}
-				>
-					<View
-						style={{
-							flex: 1,
-							paddingTop: insets.top,
-							paddingBottom: insets.bottom,
-						}}
-					>
-						{errorMsg ? (
-							<Text style={styles.errorText}>{errorMsg}</Text>
-						) : (
-							<FlatList
-								data={[weatherData]}
-								renderItem={({ item }) => (
-									<WeatherDisplay
-										isNightTime={isNightTime}
-										weatherData={item}
-									/>
-								)}
-								keyExtractor={(item, index) => index.toString()}
-								contentContainerStyle={styles.flatListContent}
-								showsVerticalScrollIndicator={false}
-							/>
-						)}
-					</View>
-				</ImageBackground>
-			</SafeAreaView>
-		</SafeAreaProvider>
+		<SafeAreaView style={styles.safeArea}>
+			<StatusBar
+				translucent
+				backgroundColor="transparent"
+				barStyle={isNightTime ? 'light-content' : 'dark-content'}
+			/>
+			<ImageBackground
+				source={isNightTime ? nightImage : dayImage}
+				style={styles.background}
+			>
+				<View style={[styles.header, { paddingTop: top }]}></View>
+				<View style={{ flex: 1 }}>
+					{errorMsg ? (
+						<Text style={styles.errorText}>{errorMsg}</Text>
+					) : (
+						<FlatList
+							data={[weatherData]}
+							renderItem={({ item }) => (
+								<WeatherDisplay isNightTime={isNightTime} weatherData={item} />
+							)}
+							keyExtractor={(item, index) => index.toString()}
+							contentContainerStyle={styles.flatListContent}
+							showsVerticalScrollIndicator={false}
+						/>
+					)}
+				</View>
+			</ImageBackground>
+		</SafeAreaView>
 	);
 }
 
@@ -116,7 +106,21 @@ const styles = StyleSheet.create({
 	background: {
 		flex: 1,
 		width: '100%',
-		height: '100%',
+		height: '120%',
+		marginTop: -70,
+		paddingTop: 20,
+	},
+	header: {
+		backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background for the header
+		paddingHorizontal: 16,
+		paddingBottom: 10,
+		alignItems: 'center', // Center the text horizontally
+		justifyContent: 'center', // Center the text vertically
+	},
+	headerText: {
+		color: 'white',
+		fontSize: 24,
+		fontWeight: 'bold',
 	},
 	flatListContent: {
 		flexGrow: 1,

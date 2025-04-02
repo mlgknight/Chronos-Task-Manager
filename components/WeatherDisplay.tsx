@@ -10,11 +10,17 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WeatherData } from '../types';
 import WeeklyWeather from '../components/WeeklyWeather';
-
+import { Day, Hour } from '../types';
 interface WeatherDisplayProps {
 	weatherData: WeatherData | null;
 	isNightTime: boolean;
 }
+
+export interface ForecastDay {
+	day: Day;
+	hour: Hour[];
+}
+
 
 const getDayOfWeek = (dateString: number) => {
 	const date = new Date(dateString);
@@ -39,7 +45,7 @@ export default function WeatherDisplay({
 	}
 
 	const { location, current, forecast } = weatherData;
-	const { day, hour } = forecast.forecastday[0];
+	const { day, hour } = forecast.forecastday[0] || { day: {}, hour: [] };
 
 	const lightDarkVariable = isNightTime
 		? 'rgba(0, 0, 0, 0.5)'
@@ -64,6 +70,22 @@ export default function WeatherDisplay({
 						>
 							Feels like: {Math.ceil(current.feelslike_f)}°
 						</Text>
+						<View
+							style={{
+								flexDirection: 'row',
+								justifyContent: 'center',
+								alignItems: 'center',
+								gap: 10,
+							}}
+						>
+							<Image
+								source={{ uri: `https:${current.condition.icon}` }}
+								style={styles.icon}
+							/>
+							<Text style={{ fontSize: 22, color: 'white' }}>
+								{current.condition.text}
+							</Text>
+						</View>
 						<Text
 							style={[
 								styles.baseText,
@@ -80,7 +102,7 @@ export default function WeatherDisplay({
 							HOURLY FORECAST
 						</Text>
 						<FlatList
-							data={hour}
+							data={Array.isArray(hour) ? hour : []}
 							renderItem={({ item }) => (
 								<View style={styles.hourlyItem}>
 									<Text style={styles.hourlyTemp}>
@@ -97,7 +119,7 @@ export default function WeatherDisplay({
 							)}
 							keyExtractor={(item) => item.time_epoch.toString()}
 							horizontal
-							showsHorizontalScrollIndicator={false} // Hide horizontal scroll indicator
+							showsHorizontalScrollIndicator={false}
 						/>
 					</View>
 
@@ -219,5 +241,9 @@ const styles = StyleSheet.create({
 	},
 	flatListContent: {
 		paddingBottom: 20,
+	},
+	icon: {
+		width: 40,
+		height: 40,
 	},
 });
