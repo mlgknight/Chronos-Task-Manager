@@ -48,21 +48,6 @@ Chronos is a sleek, user-friendly task management app designed to help you **org
 ---
 
 ## 📸 Screenshots  
-*(Replace with your actual screenshots)*  
-| Login Screen | Daily Tasks | Monthly View |  
-|--------------|-------------|--------------|  
-| ![Login](https://via.placeholder.com/300x600?text=Login+Screen) | ![Daily](https://via.placeholder.com/300x600?text=Daily+Tasks) | ![Monthly](https://via.placeholder.com/300x600?text=Monthly+View) |  
+*(comming soon)*  
 
----
 
-## 🚀 Getting Started  
-
-### Prerequisites  
-- Node.js & npm/yarn installed  
-- Firebase project setup (for auth/database)  
-
-### Installation  
-1. Clone the repository:  
-   ```bash
-   git clone https://github.com/mlgknight/Chronos.git
-   cd Chronos
