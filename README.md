@@ -42,7 +42,7 @@ Chronos is a sleek, user-friendly task management app designed to help you **org
 | **Frontend**   | React Native     |  
 | **Backend**    | Firebase (Auth & Realtime DB) |  
 | **Navigation** | React Navigation |  
-| **Styling**    | Tailwind CSS / Styled Components |  
+| **Styling**    | Paper UI / CSS |  
 | **APIs**       | Quote/Image API for login screen |  
 
 ---
