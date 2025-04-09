@@ -111,11 +111,11 @@ const styles = StyleSheet.create({
 		paddingTop: 20,
 	},
 	header: {
-		backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background for the header
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
 		paddingHorizontal: 16,
 		paddingBottom: 10,
-		alignItems: 'center', // Center the text horizontally
-		justifyContent: 'center', // Center the text vertically
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 	headerText: {
 		color: 'white',

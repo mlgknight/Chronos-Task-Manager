@@ -52,3 +52,15 @@ export interface WeatherData {
 	current: Current;
 	forecast: Forecast;
 }
+
+export interface UserData {
+	name: string;
+	email: string;
+	photoURL: string;
+}
+
+export interface CurrentUser {
+	DisplayName: string;
+	Email: string;
+	uid: string;
+  }
