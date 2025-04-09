@@ -1,50 +1,46 @@
-# Welcome to your Expo app 👋
+Chronos ⏳
+Your Daily Productivity Companion
+Chronos is a sleek, user-friendly task management app designed to help you organize your day, hour by hour, while staying motivated and focused. Built with React Native, Firebase, and React Navigation, it combines intuitive design with powerful features to streamline your daily workflow.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+✨ Features
+🔐 Secure & Personalized
+Firebase Authentication – Secure login/signup.
 
-## Get started
+Customizable Profile – Set your name, profile picture, and preferences.
 
-1. Install dependencies
+Theme Customization – Choose light/dark mode or custom themes in settings.
 
-   ```bash
-   npm install
-   ```
+📅 Smart Task Management
+Hourly Task Breakdown – Schedule & track tasks for the current day.
 
-2. Start the app
+Monthly Task View – Plan ahead with a broader timeline.
 
-   ```bash
-    npx expo start
-   ```
+Task Status Tracking – Organize tasks into Ongoing ✅ and Finished ✔️.
 
-In the output, you'll find options to open the app in a
+🎨 Inspirational & Intuitive UI
+Dynamic Login Screen – Fresh quotes & images via API to motivate you daily.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Date & Day Display – Always know today’s date & weekday at a glance.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Profile Quick Access – Tap your profile picture to logout or adjust settings.
 
-## Get a fresh project
+🔄 Smooth Navigation
+React Navigation – Fluid transitions between screens.
 
-When you're ready, run:
+Responsive Design – Works seamlessly across devices.
 
-```bash
-npm run reset-project
-```
+🚀 Why Chronos?
+✔ All-in-one daily planner – From hourly tasks to monthly goals.
+✔ Motivational touch – Start your day with inspiring quotes.
+✔ Fully customizable – Themes, profile, and task views adapt to your style.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+🛠️ Tech Stack
+Frontend: React Native
 
-## Learn more
+Backend: Firebase (Auth & Realtime DB)
 
-To learn more about developing your project with Expo, look at the following resources:
+Navigation: React Navigation
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Styling: Tailwind CSS / Styled Components
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+APIs: Quote/Image API for login screen
