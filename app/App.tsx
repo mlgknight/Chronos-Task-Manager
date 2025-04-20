@@ -8,35 +8,38 @@ import Signup from '../components/login/Signup';
 import HomeTabs from '../components/home/HomeTabs';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
-import { CurrentUser } from'../types';
+import { CurrentUser } from '../types';
+import { PaperProvider } from 'react-native-paper';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
 	const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState<CurrentUser | null>(null);
+	const [user, setUser] = useState<CurrentUser | null>(null);
 
+	useEffect(() => {
+		const unsubscribe = onAuthStateChanged(
+			FIREBASE_AUTH,
+			(currentUser: FirebaseUser | null) => {
+				if (currentUser) {
+					const formattedUser: CurrentUser = {
+						DisplayName: currentUser.displayName ?? '',
+						Email: currentUser.email ?? '',
+						uid: currentUser.uid,
+					};
+					setUser(formattedUser);
+				} else {
+					setUser(null);
+				}
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (currentUser: FirebaseUser | null) => {
-      if (currentUser) {
-        const formattedUser: CurrentUser = {
-          DisplayName: currentUser.displayName ?? '',
-          Email: currentUser.email ?? '',
-          uid: currentUser.uid,
-        };
-        setUser(formattedUser);
-      } else {
-        setUser(null);
-      }
+				if (initializing) {
+					setInitializing(false);
+				}
+			}
+		);
 
-      if (initializing) {
-        setInitializing(false);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [initializing]);
+		return () => unsubscribe();
+	}, [initializing]);
 
 	const isLoggedIn = !!user;
 	console.log('isLoggedIn:', isLoggedIn);
@@ -56,20 +59,22 @@ export default function App() {
 	console.log(isLoggedIn);
 
 	return (
-		<SafeAreaProvider>
-			<NavigationContainer>
-				<Stack.Navigator screenOptions={{ headerShown: false }}>
-					{isLoggedIn ? (
-						<Stack.Screen name="HomeTabs" component={HomeTabs} />
-					) : (
-						<>
-							<Stack.Screen name="Login" component={Login} />
-							<Stack.Screen name="Signup" component={Signup} />
-						</>
-					)}
-				</Stack.Navigator>
-			</NavigationContainer>
-		</SafeAreaProvider>
+		<PaperProvider>
+			<SafeAreaProvider>
+				<NavigationContainer>
+					<Stack.Navigator screenOptions={{ headerShown: false }}>
+						{isLoggedIn ? (
+							<Stack.Screen name="HomeTabs" component={HomeTabs} />
+						) : (
+							<>
+								<Stack.Screen name="Login" component={Login} />
+								<Stack.Screen name="Signup" component={Signup} />
+							</>
+						)}
+					</Stack.Navigator>
+				</NavigationContainer>
+			</SafeAreaProvider>
+		</PaperProvider>
 	);
 }
 

@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
+import { uuid } from 'uuidv4';
 import {
 	View,
 	Text,
 	StyleSheet,
-	TextInput,
 	TouchableOpacity,
 	ActivityIndicator,
 	ScrollView,
 	Image,
-	Button,
 } from 'react-native';
+import { TextInput } from 'react-native-paper';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { FIREBASE_AUTH, FIRE_STORE } from '../../FirebaseConfig';
@@ -57,7 +57,7 @@ export default function Signup({
 
 			await updateProfile(userCredential.user, {
 				displayName: name,
-				photoURL: image || '', // Save the profile picture URL
+				photoURL: image || '',
 			});
 
 			await setDoc(doc(FIRE_STORE, 'users', userCredential.user.uid), {
@@ -65,6 +65,9 @@ export default function Signup({
 				email,
 				photoURL: image || '',
 				createdAt: new Date().toISOString(),
+				category: {
+					projects: { count : 5, finished : 0, ongoing : 0, tasks: ['web dev', 'test']},
+				},
 			});
 
 			navigation.navigate('HomeTabs');
@@ -180,7 +183,7 @@ export default function Signup({
 				<View style={styles.SignUp}>
 					<Text>Already have an account?</Text>
 					<TouchableOpacity onPress={() => navigation.navigate('Login')}>
-						<Text style={{ color: '#8B78FF', fontWeight: 'bold' }}>Log In</Text>
+						<Text style={{ color: '#4F4789', fontWeight: 'bold' }}>Log In</Text>
 					</TouchableOpacity>
 				</View>
 			</View>
@@ -214,7 +217,7 @@ const styles = StyleSheet.create({
 		width: 150,
 		height: 55,
 		textAlign: 'center',
-		backgroundColor: '#8B78FF',
+		backgroundColor: '#4F4789',
 	},
 	profileImage: {
 		width: 150,
@@ -247,7 +250,7 @@ const styles = StyleSheet.create({
 	button: {
 		width: 342,
 		height: 50,
-		backgroundColor: '#8B78FF',
+		backgroundColor: '#4F4789',
 		justifyContent: 'center',
 		alignItems: 'center',
 		borderRadius: 8,

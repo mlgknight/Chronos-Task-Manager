@@ -3,19 +3,18 @@ import {
 	Text,
 	StyleSheet,
 	Image,
-	TextInput,
 	TouchableOpacity,
 	ActivityIndicator,
 	ScrollView,
-	StatusBar,
 } from 'react-native';
+import { TextInput } from 'react-native-paper';
+import * as React from 'react';
 
 import { useState, useEffect } from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { FirebaseError } from 'firebase/app';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type RootStackParamList = {
 	Login: undefined;
@@ -57,10 +56,10 @@ export default function Login({
 			}
 
 			const data = await response.json();
-			setImage(data.urls.regular || null); // Set the fetched image URL
+			setImage(data.urls.regular || null);
 		} catch (error) {
 			console.error('Error fetching image:', error);
-			setImage(welcome_photo); // Fallback to no image
+			setImage(welcome_photo);
 		}
 	};
 
@@ -182,6 +181,7 @@ export default function Login({
 							secureTextEntry
 							value={password}
 							onChangeText={setPassword}
+
 						/>
 					</View>
 					<TouchableOpacity
@@ -199,7 +199,7 @@ export default function Login({
 				<View style={styles.SignUp}>
 					<Text>You don't have an account?</Text>
 					<TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-						<Text style={{ color: '#8B78FF', fontWeight: 'bold' }}>
+						<Text style={{ color: '#4F4789', fontWeight: 'bold' }}>
 							Sign Up
 						</Text>
 					</TouchableOpacity>
@@ -230,14 +230,14 @@ const styles = StyleSheet.create({
 		shadowRadius: 5,
 		elevation: 5,
 		borderWidth: 2,
-		borderColor: '#8B78FF',
+		borderColor: '#4F4789',
 	},
 	title: {
 		fontSize: 30,
 		fontFamily: 'Poppins-Bold',
 		textAlign: 'center',
 		marginBottom: 15,
-		color: '#8B78FF',
+		color: '#4F4789',
 		fontWeight: 'bold',
 		textShadowColor: 'rgba(0, 0, 0, 0.2)',
 		textShadowOffset: { width: 1, height: 1 },
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
 	button: {
 		width: 342,
 		height: 50,
-		backgroundColor: '#8B78FF',
+		backgroundColor: '#4F4789',
 		justifyContent: 'center',
 		alignItems: 'center',
 		borderRadius: 8,
