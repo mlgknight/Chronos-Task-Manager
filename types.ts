@@ -57,6 +57,7 @@ export interface UserData {
 	name: string;
 	email: string;
 	photoURL: string;
+	avatarSvg: string;
 }
 
 export interface CurrentUser {

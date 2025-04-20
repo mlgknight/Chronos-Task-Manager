@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { uuid } from 'uuidv4';
 import {
 	View,
 	Text,
@@ -7,14 +6,15 @@ import {
 	TouchableOpacity,
 	ActivityIndicator,
 	ScrollView,
-	Image,
 } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { FIREBASE_AUTH, FIRE_STORE } from '../../FirebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
-import * as ImagePicker from 'expo-image-picker';
+import { createAvatar } from '@dicebear/core';
+import { bottts } from '@dicebear/collection';
+import { serverTimestamp } from 'firebase/firestore';
 
 type RootStackParamList = {
 	Login: undefined;
@@ -37,9 +37,6 @@ export default function Signup({
 	const [name, setName] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
-	const [image, setImage] = useState<string | null>(null); // State for profile picture
-
-	const Camera_icon = require('../../assets/images/Camera_icon.png');
 
 	const handleSignUp = async () => {
 		if (password !== passwordConfirm) {
@@ -55,16 +52,17 @@ export default function Signup({
 				password
 			);
 
-			await updateProfile(userCredential.user, {
-				displayName: name,
-				photoURL: image || '',
-			});
+			const avatarSvg = createAvatar(bottts, {
+				seed: userCredential.user.uid,
+				size: 128,
+			  }).toString();
+
 
 			await setDoc(doc(FIRE_STORE, 'users', userCredential.user.uid), {
 				name,
 				email,
-				photoURL: image || '',
-				createdAt: new Date().toISOString(),
+				avatarSvg,
+				createdAt: serverTimestamp(),
 				category: {
 					projects: { count : 5, finished : 0, ongoing : 0, tasks: ['web dev', 'test']},
 				},
@@ -86,31 +84,8 @@ export default function Signup({
 		}
 	};
 
-	const pickImage = async () => {
-		try {
-			const permissionResult =
-				await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-			if (!permissionResult.granted) {
-				alert('Permission to access the camera roll is required!');
-				return;
-			}
 
-			const result = await ImagePicker.launchImageLibraryAsync({
-				mediaTypes: ImagePicker.MediaTypeOptions.Images,
-				allowsEditing: true,
-				aspect: [1, 1],
-				quality: 1,
-			});
-
-			if (!result.canceled) {
-				setImage(result.assets[0].uri);
-			}
-		} catch (error) {
-			console.error('Error picking image:', error);
-			alert('An error occurred while picking the image.');
-		}
-	};
 
 	return (
 		<ScrollView>
@@ -124,6 +99,7 @@ export default function Signup({
 						placeholderTextColor="#aaa"
 						value={name}
 						onChangeText={setName}
+						autoCorrect={false}
 					/>
 				</View>
 				<View style={styles.inputContainer}>
@@ -135,6 +111,7 @@ export default function Signup({
 						value={email}
 						onChangeText={setEmail}
 						autoCapitalize="none"
+						autoCorrect={false}
 					/>
 				</View>
 				<View style={styles.inputContainer}>
@@ -158,16 +135,6 @@ export default function Signup({
 						value={passwordConfirm}
 						onChangeText={setPasswordConfirm}
 					/>
-					<TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
-						{image ? (
-							<Image source={{ uri: image }} style={styles.profileImage} />
-						) : (
-							<>
-								<Text style={styles.label}>Add Profile Picture</Text>
-								<Image style={styles.cameraIcon} source={Camera_icon}></Image>
-							</>
-						)}
-					</TouchableOpacity>
 				</View>
 				<TouchableOpacity
 					style={styles.button}

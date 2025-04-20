@@ -1,69 +1,57 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
 	View,
 	Text,
 	StyleSheet,
-	ScrollView,
 	ActivityIndicator,
 	TouchableOpacity,
 } from 'react-native';
-import { Avatar } from 'react-native-paper';
+import { SvgUri } from 'react-native-svg';
 import { doc, getDoc } from 'firebase/firestore';
 import { signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { FIRE_STORE, FIREBASE_AUTH } from '../../FirebaseConfig';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { UserData } from '../../types';
 import Category from './Category';
 import RecentTasks from './RecentTasks';
-type RootStackParamList = {
-	Login: undefined;
-	Home: undefined;
-};
 
-type HomeScreenNavigationProp = NativeStackNavigationProp<
-	RootStackParamList,
-	'Home'
->;
-
-type Props = {
-	navigation: HomeScreenNavigationProp;
-};
-
-export default function Home({ navigation }: Props) {
+export default function Home() {
 	const [userData, setUserData] = useState<UserData | null>(null);
-	const [loading, setLoading] = useState(true);
-	const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
+	const [loading, setLoading] = useState<boolean>(true);
 
-
-
-	console.log(firebaseUser);
 	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, async (user) => {
-			setFirebaseUser(user);
-			if (user) {
-				await fetchUserData(user.uid);
+		const unsubscribe = onAuthStateChanged(
+			FIREBASE_AUTH,
+			async (user: User | null) => {
+				if (user) {
+					await fetchUserData(user.uid);
+				}
+				setLoading(false);
 			}
-			setLoading(false);
-		});
-
+		);
 		return unsubscribe;
-	}, [navigation]);
+	}, []);
 
-	const fetchUserData = async (userId: string) => {
+	// Generate avatar URI from user data
+	const avatarUri = useMemo(() => {
+		if (!userData?.avatarSvg) return null;
+		return `data:image/svg+xml;utf8,${encodeURIComponent(userData.avatarSvg)}`;
+	}, [userData?.avatarSvg]);
+
+	// Fetch user data from Firestore
+	const fetchUserData = async (userId: string): Promise<void> => {
 		try {
 			const userDocRef = doc(FIRE_STORE, 'users', userId);
 			const userDoc = await getDoc(userDocRef);
-
 			if (userDoc.exists()) {
-				const data = userDoc.data() as UserData;
-				setUserData(data);
+				setUserData(userDoc.data() as UserData);
 			}
 		} catch (error) {
 			console.error('Error fetching user data:', error);
 		}
 	};
 
-	const handleSignOut = async () => {
+	// Handle user sign-out
+	const handleSignOut = async (): Promise<void> => {
 		try {
 			await signOut(FIREBASE_AUTH);
 		} catch (error) {
@@ -74,7 +62,7 @@ export default function Home({ navigation }: Props) {
 
 	// Date formatting helpers
 	const currentDate = new Date();
-	const daysOfWeek = [
+	const daysOfWeek: string[] = [
 		'Sunday',
 		'Monday',
 		'Tuesday',
@@ -83,7 +71,7 @@ export default function Home({ navigation }: Props) {
 		'Friday',
 		'Saturday',
 	];
-	const monthsOfYear = [
+	const monthsOfYear: string[] = [
 		'January',
 		'February',
 		'March',
@@ -97,11 +85,11 @@ export default function Home({ navigation }: Props) {
 		'November',
 		'December',
 	];
-
 	const currentDayOfWeek = daysOfWeek[currentDate.getDay()];
 	const currentDay = currentDate.getDate();
 	const currentMonth = monthsOfYear[currentDate.getMonth()];
 
+	// Show loading indicator while fetching data
 	if (loading) {
 		return (
 			<View style={styles.loadingContainer}>
@@ -112,6 +100,7 @@ export default function Home({ navigation }: Props) {
 
 	return (
 		<View style={styles.container}>
+			{/* Header Section */}
 			<View style={styles.header}>
 				<View>
 					<Text style={styles.dayWeekText}>{currentDayOfWeek}</Text>
@@ -119,27 +108,25 @@ export default function Home({ navigation }: Props) {
 						{currentMonth} {currentDay}
 					</Text>
 				</View>
-
 				<View style={styles.signOutContainer}>
-					<Avatar.Image
-						size={50}
-						style={{ marginHorizontal: 5 }}
-						source={
-							userData?.photoURL
-								? { uri: userData.photoURL }
-								: require('../../assets/images/icon.png')
-						}
-					/>
+					{avatarUri ? (
+						<SvgUri width={50} height={50} uri={avatarUri} />
+					) : (
+						<Text style={styles.noAvatarText}>No Avatar</Text>
+					)}
 					<TouchableOpacity onPress={handleSignOut}>
 						<Text style={styles.signOutText}>Sign Out</Text>
 					</TouchableOpacity>
 				</View>
 			</View>
+
+			{/* User Greeting */}
 			<View>
-				<Text style={styles.userName}>Hi, {userData?.name}</Text>
+				<Text style={styles.userName}>Hi, {userData?.name || 'User'}</Text>
 				<Text style={styles.dayWeekText}>5 tasks pending</Text>
 			</View>
 
+			{/* Placeholder for additional content */}
 			<View style={styles.boxContainer}>
 				{userData ? (
 					<View style={styles.box}>
@@ -153,7 +140,6 @@ export default function Home({ navigation }: Props) {
 				<Category />
 				<RecentTasks />
 			</View>
-
 		</View>
 	);
 }
@@ -173,8 +159,7 @@ const styles = StyleSheet.create({
 	header: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
-		alignItems: 'flex-end',
-		gap: 10,
+		alignItems: 'center',
 	},
 	dayText: {
 		fontSize: 23,
@@ -186,13 +171,17 @@ const styles = StyleSheet.create({
 		marginBottom: 10,
 	},
 	signOutContainer: {
-		gap: 10,
 		alignItems: 'center',
 	},
 	signOutText: {
 		color: '#4F4789',
 		fontSize: 16,
 		fontWeight: 'bold',
+		marginTop: 5,
+	},
+	noAvatarText: {
+		fontSize: 14,
+		color: '#666',
 	},
 	boxContainer: {
 		marginTop: 20,
@@ -221,28 +210,4 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		marginTop: 15,
 	},
-	categoryListContainer: {
-		paddingVertical: 10,
-		paddingHorizontal: 5,
-	  },
-	  boxCategory: {
-		width: 150,
-		height: 120,
-		backgroundColor: '#4F4789',
-		justifyContent: 'center',
-		alignItems: 'center',
-		borderRadius: 8,
-		marginRight: 15,
-		padding: 15,
-	  },
-	  taskCountText: {
-		color: '#fff',
-		fontSize: 14,
-		marginVertical: 5,
-	  },
-	  plusText: {
-		color: '#fff',
-		fontSize: 20,
-		fontWeight: 'bold',
-	  }
 });
