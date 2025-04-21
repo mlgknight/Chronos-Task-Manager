@@ -15,6 +15,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { FirebaseError } from 'firebase/app';
+import Constants from 'expo-constants';
 
 type RootStackParamList = {
 	Login: undefined;
@@ -43,7 +44,7 @@ export default function Login({
 	const [author, setAuthor] = useState<string | null>(null);
 
 	const auth = FIREBASE_AUTH;
-
+	const quoteApiKey = Constants.expoConfig?.extra?.QUOTE_API_KEY;
 
 	const fetchImage = async () => {
 		try {
@@ -68,7 +69,7 @@ export default function Login({
 			const response = await fetch('https://api.api-ninjas.com/v1/quotes', {
 				method: 'GET',
 				headers: {
-					'X-Api-Key': 'qJqnAqe25hYBNvlfy66YKw==chuvmY1r4j6Fwm6M',
+					'X-Api-Key': quoteApiKey,
 				},
 			});
 
