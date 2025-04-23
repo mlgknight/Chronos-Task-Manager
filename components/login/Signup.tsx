@@ -15,6 +15,7 @@ import { doc, setDoc } from 'firebase/firestore';
 import { createAvatar } from '@dicebear/core';
 import { bottts } from '@dicebear/collection';
 import { serverTimestamp } from 'firebase/firestore';
+import RecentTasks from '../home/RecentTasks';
 
 type RootStackParamList = {
 	Login: undefined;
@@ -66,6 +67,7 @@ export default function Signup({
 				category: {
 					projects: { count : 5, finished : 0, ongoing : 0, tasks: ['web dev', 'test']},
 				},
+				RecentTasks: [],
 			});
 
 			navigation.navigate('HomeTabs');

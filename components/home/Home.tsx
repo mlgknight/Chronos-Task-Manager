@@ -29,7 +29,7 @@ export default function Home() {
 			}
 		);
 		return unsubscribe;
-	}, []);
+	}, [userData]);
 
 	// Generate avatar URI from user data
 	const avatarUri = useMemo(() => {
@@ -123,7 +123,7 @@ export default function Home() {
 			{/* User Greeting */}
 			<View>
 				<Text style={styles.userName}>Hi, {userData?.name || 'User'}</Text>
-				<Text style={styles.dayWeekText}>5 tasks pending</Text>
+				<Text style={styles.dayWeekText}>10 tasks pending</Text>
 			</View>
 
 			{/* Placeholder for additional content */}
@@ -137,8 +137,8 @@ export default function Home() {
 				)}
 			</View>
 			<View>
-				<Category />
-				<RecentTasks />
+				<Category categories={userData?.categories} />
+				<RecentTasks RecentTasks={userData?.RecentTasks} />
 			</View>
 		</View>
 	);

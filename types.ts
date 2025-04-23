@@ -53,15 +53,43 @@ export interface WeatherData {
 	forecast: Forecast;
 }
 
+export interface Task {
+	id: string;
+	task: string;
+	timeStamp: string;
+}
+
+export interface Category {
+    id: string;
+    tasks: Task[];
+    name: string;
+    color: string;
+	timeStamp: string;
+}
+
 export interface UserData {
 	name: string;
 	email: string;
 	photoURL: string;
 	avatarSvg: string;
+	categories?: Category[];
+	RecentTasks?: Task[];
 }
 
 export interface CurrentUser {
 	DisplayName: string;
 	Email: string;
 	uid: string;
-  }
+}
+export interface RecentTask {
+    task: string;
+    id: string | number;
+}
+
+export interface RecentTasksProps {
+    RecentTasks?: Task[];
+}
+
+export interface CategoryProps {
+    categories?: Category[];
+}

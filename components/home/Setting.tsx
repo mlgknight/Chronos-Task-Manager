@@ -1,8 +1,11 @@
-
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 export default function Setting() {
-    return (
-        <Text>Setting</Text>
-    )
+	return (
+	<View>
+		<Text>Setting</Text>
+		<Text>hdfghgfhfg</Text>
+	</View>
+
+);
 }
