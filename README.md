@@ -1,7 +1,7 @@
 # Chronos ⏳  
 ### *Your Daily Productivity Companion*  
 
-![Chronos Banner](https://github.com/yourusername/your-repo/raw/main/assets/images/showcase-photos/banner.png)  
+![Chronos Banner](https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/banner.png)  
 
 Chronos is a sleek, user-friendly task management app designed to help you **organize your day, hour by hour**, while staying motivated and focused. Built with **React Native, Firebase, and React Navigation**, it combines intuitive design with powerful features to streamline your daily workflow.  
 
@@ -10,40 +10,42 @@ Chronos is a sleek, user-friendly task management app designed to help you **org
 ## ✨ Features  
 
 ### 🔐 Secure & Personalized  
-![Authentication Demo](https://github.com/yourusername/your-repo/raw/main/assets/images/showcase-photos/auth-flow.gif)  
-- **Firebase Authentication** – Secure login/signup.  
-- **Customizable Profile** – Set your name, profile picture, and preferences.  
-- **Theme Customization** – Choose light/dark mode or custom themes in settings.  
+- **Firebase Authentication** – Secure login/signup  
+- **Customizable Profile** – Set your name, profile picture, and preferences  
+- **Theme Customization** – Choose light/dark mode or custom themes  
 
 ### 📅 Smart Task Management  
-![Task Management](https://github.com/yourusername/your-repo/raw/main/assets/images/showcase-photos/task-management.png)  
-- **Hourly Task Breakdown** – Schedule & track tasks for the **current day**.  
-- **Monthly Task View** – Plan ahead with a broader timeline.  
-- **Task Status Tracking** – Organize tasks into **Ongoing ✅** and **Finished ✔️**.  
+- **Hourly Task Breakdown** – Schedule & track daily tasks  
+- **Monthly Task View** – Plan ahead with broader timelines  
+- **Task Status Tracking** – Organize tasks into Ongoing ✅ and Finished ✔️  
 
-### 🎨 Inspirational & Intuitive UI  
-![Dynamic Login](https://github.com/yourusername/your-repo/raw/main/assets/images/showcase-photos/dynamic-login.png)  
-- **Dynamic Login Screen** – Fresh quotes & images via API to motivate you daily.  
-- **Date & Day Display** – Always know **today's date & weekday** at a glance.  
-- **Profile Quick Access** – Tap your profile picture to **logout or adjust settings**.  
+### 🎨 Inspirational UI  
+- **Dynamic Login Screen** – Fresh motivational quotes & images  
+- **At-a-Glance Overview** – Always see today's date & weekday  
+- **Quick Access** – Profile picture for settings/logout  
 
 ---
 
 ## 📸 Screenshots  
 
-| Feature | Preview |
-|---------|---------|
-| **Daily View** | ![Daily View](https://github.com/mlgknight/Chronos-Task-Manager/master/assets/images/showcase-photos/daily-view.png) |
-| **Monthly Calendar** | ![Monthly View](https://github.com/yourusername/your-repo/raw/main/assets/images/showcase-photos/monthly-view.png) |
-| **Dark Mode** | ![Dark Theme](https://github.com/yourusername/your-repo/raw/main/assets/images/showcase-photos/dark-mode.png) |
-| **Task Creation** | ![New Task](https://github.com/yourusername/your-repo/raw/main/assets/images/showcase-photos/new-task.png) |
+<div align="center">
+  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/login-screen.png" width="30%" alt="Login Screen"/>
+  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/daily-view.png" width="30%" alt="Daily View"/> 
+  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/monthly-view.png" width="30%" alt="Monthly View"/>
+</div>
+
+<div align="center">
+  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/task-creation.png" width="30%" alt="Task Creation"/>
+  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/dark-mode.png" width="30%" alt="Dark Mode"/>
+  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/profile-settings.png" width="30%" alt="Profile Settings"/>
+</div>
 
 ---
 
-## 🚀 Why Chronos?  
-✔ **All-in-one daily planner** – From hourly tasks to monthly goals.  
-✔ **Motivational touch** – Start your day with inspiring quotes.  
-✔ **Fully customizable** – Themes, profile, and task views adapt to **your** style.  
+## 🚀 Why Choose Chronos?  
+✔ **All-in-one planner** – Hourly tasks to monthly goals  
+✔ **Daily motivation** – Inspiring quotes to start your day  
+✔ **Your style** – Fully customizable themes and views  
 
 ---
 
