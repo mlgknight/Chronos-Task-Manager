@@ -44,10 +44,10 @@ Chronos is a sleek, user-friendly task management app designed to help you **org
 ---
 
 ## 🚀 Why Choose Chronos?  
-✔ **All-in-one planner** – Hourly tasks to monthly goals  
+✔ **All-in-one planner** 
 ✔ **Daily motivation** – Inspiring quotes to start your day  
-✔ **Your style** – Fully customizable themes and views  
-
+✔ **Your style** – Fully customizable themes and views 
+✔ **Structure Your Life** – Categories to help you stay organized.
 ---
 
 ## 🛠️ Tech Stack  
