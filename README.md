@@ -30,13 +30,14 @@ Chronos is a sleek, user-friendly task management app designed to help you **org
 
 <div align="center">
   <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/IMG_4881.PNG" width="30%" alt="Login Screen"/>
-  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/daily-view.png" width="30%" alt="Daily View"/> 
-  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/monthly-view.png" width="30%" alt="Monthly View"/>
+  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/IMG_4882.PNG" width="30%" alt="Daily View"/> 
+  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/IMG_4879.PNG" width="30%" alt="Monthly View"/>
 </div>
 
 <div align="center">
-  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/task-creation.png" width="30%" alt="Task Creation"/>
-  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/dark-mode.png" width="30%" alt="Dark Mode"/>
+  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/IMG_4879.PNG" width="30%" alt="Task Creation"/>
+  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/
+IMG_4877.PNG" width="30%" alt="Dark Mode"/>
   <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/profile-settings.png" width="30%" alt="Profile Settings"/>
 </div>
 
