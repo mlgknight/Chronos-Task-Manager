@@ -3,8 +3,7 @@
 
 
 <img 
-  style="border-radius: 50%; width: 200px; height: 200px; object-fit: cover;" 
-  src="https://github.com/.../logo.jpg" 
+  src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/logo.jpg"
   alt="Chronos Logo"
 >
 
