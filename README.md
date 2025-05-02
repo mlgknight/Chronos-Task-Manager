@@ -36,9 +36,8 @@ Chronos is a sleek, user-friendly task management app designed to help you **org
 
 <div align="center">
   <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/IMG_4879.PNG" width="30%" alt="Task Creation"/>
-  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/
-IMG_4877.PNG" width="30%" alt="Dark Mode"/>
-  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/profile-settings.png" width="30%" alt="Profile Settings"/>
+  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/IMG_4877.PNG" width="30%" alt="Dark Mode"/>
+  <img src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/IMG_4872.PNG" width="30%" alt="Profile Settings"/>
 </div>
 
 ---
