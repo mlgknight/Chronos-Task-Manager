@@ -2,7 +2,11 @@
 ### *Your Daily Productivity Companion*  
 
 
-<img style={ border-radius: "20px" } src="https://github.com/mlgknight/Chronos-Task-Manager/raw/master/assets/images/showcase-photos/logo.jpg" width="200" alt="Chronos Logo">
+<img 
+  style="border-radius: 50%; width: 200px; height: 200px; object-fit: cover;" 
+  src="https://github.com/.../logo.jpg" 
+  alt="Chronos Logo"
+>
 
 Chronos is a sleek, user-friendly task management app designed to help you **organize your day, hour by hour**, while staying motivated and focused. Built with **React Native, Firebase, and React Navigation**, it combines intuitive design with powerful features to streamline your daily workflow.  
 
