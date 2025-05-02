@@ -13,9 +13,10 @@ import { FIRE_STORE, FIREBASE_AUTH } from '../../FirebaseConfig';
 import { UserData } from '../../types';
 import Category from './Category';
 import RecentTasks from './RecentTasks';
+import { useUserData } from '@/hooks/UserDataContext';
 
 export default function Home() {
-	const [userData, setUserData] = useState<UserData | null>(null);
+	const { userData, setUserData } = useUserData();
 	const [loading, setLoading] = useState<boolean>(true);
 
 	useEffect(() => {
@@ -29,15 +30,13 @@ export default function Home() {
 			}
 		);
 		return unsubscribe;
-	}, [userData]);
+	}, []);
 
-	// Generate avatar URI from user data
 	const avatarUri = useMemo(() => {
 		if (!userData?.avatarSvg) return null;
 		return `data:image/svg+xml;utf8,${encodeURIComponent(userData.avatarSvg)}`;
 	}, [userData?.avatarSvg]);
 
-	// Fetch user data from Firestore
 	const fetchUserData = async (userId: string): Promise<void> => {
 		try {
 			const userDocRef = doc(FIRE_STORE, 'users', userId);
@@ -50,7 +49,6 @@ export default function Home() {
 		}
 	};
 
-	// Handle user sign-out
 	const handleSignOut = async (): Promise<void> => {
 		try {
 			await signOut(FIREBASE_AUTH);
@@ -89,7 +87,6 @@ export default function Home() {
 	const currentDay = currentDate.getDate();
 	const currentMonth = monthsOfYear[currentDate.getMonth()];
 
-	// Show loading indicator while fetching data
 	if (loading) {
 		return (
 			<View style={styles.loadingContainer}>
@@ -100,7 +97,6 @@ export default function Home() {
 
 	return (
 		<View style={styles.container}>
-			{/* Header Section */}
 			<View style={styles.header}>
 				<View>
 					<Text style={styles.dayWeekText}>{currentDayOfWeek}</Text>
@@ -120,25 +116,16 @@ export default function Home() {
 				</View>
 			</View>
 
-			{/* User Greeting */}
 			<View>
 				<Text style={styles.userName}>Hi, {userData?.name || 'User'}</Text>
-				<Text style={styles.dayWeekText}>10 tasks pending</Text>
+				<Text style={styles.dayWeekText}>
+					Number of Tasks {userData?.RecentTasks?.length}
+				</Text>
 			</View>
 
-			{/* Placeholder for additional content */}
-			<View style={styles.boxContainer}>
-				{userData ? (
-					<View style={styles.box}>
-						<Text style={styles.boxText}>Last Task Added</Text>
-					</View>
-				) : (
-					<Text style={styles.noUserDataText}>No user data available</Text>
-				)}
-			</View>
 			<View>
-				<Category categories={userData?.categories} />
-				<RecentTasks RecentTasks={userData?.RecentTasks} />
+				<Category />
+				<RecentTasks />
 			</View>
 		</View>
 	);
@@ -149,7 +136,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		paddingVertical: 65,
 		paddingHorizontal: 30,
-		backgroundColor: '#f5f5f5',
+		backgroundColor: '#F5F5F5',
 	},
 	loadingContainer: {
 		flex: 1,
@@ -174,7 +161,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	signOutText: {
-		color: '#4F4789',
+		color: '#7F56D9',
 		fontSize: 16,
 		fontWeight: 'bold',
 		marginTop: 5,
@@ -189,7 +176,7 @@ const styles = StyleSheet.create({
 	box: {
 		width: '100%',
 		height: 100,
-		backgroundColor: '#4F4789',
+		backgroundColor: '#7F56D9',
 		justifyContent: 'center',
 		alignItems: 'center',
 		borderRadius: 8,

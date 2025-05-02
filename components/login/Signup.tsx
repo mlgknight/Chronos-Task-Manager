@@ -56,8 +56,7 @@ export default function Signup({
 			const avatarSvg = createAvatar(bottts, {
 				seed: userCredential.user.uid,
 				size: 128,
-			  }).toString();
-
+			}).toString();
 
 			await setDoc(doc(FIRE_STORE, 'users', userCredential.user.uid), {
 				name,
@@ -65,7 +64,12 @@ export default function Signup({
 				avatarSvg,
 				createdAt: serverTimestamp(),
 				category: {
-					projects: { count : 5, finished : 0, ongoing : 0, tasks: ['web dev', 'test']},
+					projects: {
+						count: 5,
+						finished: 0,
+						ongoing: 0,
+						tasks: ['web dev', 'test'],
+					},
 				},
 				RecentTasks: [],
 			});
@@ -85,9 +89,6 @@ export default function Signup({
 			setLoading(false);
 		}
 	};
-
-
-
 
 	return (
 		<ScrollView>
@@ -152,7 +153,7 @@ export default function Signup({
 				<View style={styles.SignUp}>
 					<Text>Already have an account?</Text>
 					<TouchableOpacity onPress={() => navigation.navigate('Login')}>
-						<Text style={{ color: '#4F4789', fontWeight: 'bold' }}>Log In</Text>
+						<Text style={{ color: '#7F56D9', fontWeight: 'bold' }}>Log In</Text>
 					</TouchableOpacity>
 				</View>
 			</View>
@@ -186,7 +187,7 @@ const styles = StyleSheet.create({
 		width: 150,
 		height: 55,
 		textAlign: 'center',
-		backgroundColor: '#4F4789',
+		backgroundColor: '#7F56D9',
 	},
 	profileImage: {
 		width: 150,
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
 	button: {
 		width: 342,
 		height: 50,
-		backgroundColor: '#4F4789',
+		backgroundColor: '#7F56D9',
 		justifyContent: 'center',
 		alignItems: 'center',
 		borderRadius: 8,
@@ -231,7 +232,7 @@ const styles = StyleSheet.create({
 		color: '#fff',
 	},
 	errorText: {
-		color: 'red',
+		color: '#D92D20',
 		fontSize: 14,
 		marginBottom: 10,
 	},
@@ -244,5 +245,5 @@ const styles = StyleSheet.create({
 	cameraIcon: {
 		width: 80,
 		height: 80,
-	}
+	},
 });

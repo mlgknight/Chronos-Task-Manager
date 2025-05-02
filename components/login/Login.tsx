@@ -6,13 +6,17 @@ import {
 	TouchableOpacity,
 	ActivityIndicator,
 	ScrollView,
+	Modal,
+	Alert,
 } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import * as React from 'react';
-
 import { useState, useEffect } from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import {
+	signInWithEmailAndPassword,
+	sendPasswordResetEmail,
+} from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { FirebaseError } from 'firebase/app';
 import Constants from 'expo-constants';
@@ -32,37 +36,23 @@ const welcome_photo = require('../../assets/images/welcome_photo.jpg');
 
 export default function Login({
 	navigation,
+	image,
 }: {
 	navigation: WelcomeScreenNavigationProp;
+	image: string | null;
 }) {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
 	const [loading, setLoading] = useState(false);
-	const [image, setImage] = useState<string | null>(null);
 	const [quote, setQuote] = useState<string | null>(null);
 	const [author, setAuthor] = useState<string | null>(null);
+	const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+	const [resetEmail, setResetEmail] = useState('');
+	const [isSendingReset, setIsSendingReset] = useState(false);
 
 	const auth = FIREBASE_AUTH;
 	const quoteApiKey = Constants.expoConfig?.extra?.QUOTE_API_KEY;
-
-	const fetchImage = async () => {
-		try {
-			const response = await fetch(
-				'https://apis.scrimba.com/unsplash/photos/random?orientation=landscape&query=nature'
-			);
-
-			if (!response.ok) {
-				throw new Error('Failed to fetch image');
-			}
-
-			const data = await response.json();
-			setImage(data.urls.regular || null);
-		} catch (error) {
-			console.error('Error fetching image:', error);
-			setImage(welcome_photo);
-		}
-	};
 
 	const fetchQuote = async () => {
 		try {
@@ -96,7 +86,6 @@ export default function Login({
 	};
 
 	useEffect(() => {
-		fetchImage();
 		fetchQuote();
 	}, []);
 
@@ -117,11 +106,7 @@ export default function Login({
 		}
 
 		try {
-			const userCredential = await signInWithEmailAndPassword(
-				auth,
-				email,
-				password
-			);
+			await signInWithEmailAndPassword(auth, email, password);
 		} catch (error: unknown) {
 			if (error instanceof FirebaseError) {
 				if (error.code === 'auth/invalid-email') {
@@ -145,6 +130,31 @@ export default function Login({
 		}
 	};
 
+	const handleForgotPassword = async () => {
+		if (!resetEmail) {
+			Alert.alert('Error', 'Please enter your email address');
+			return;
+		}
+
+		setIsSendingReset(true);
+		try {
+			await sendPasswordResetEmail(auth, resetEmail);
+			Alert.alert(
+				'Password Reset Sent',
+				`A password reset link has been sent to ${resetEmail}. Please check your email.`
+			);
+			setShowForgotPasswordModal(false);
+			setResetEmail('');
+		} catch (error: any) {
+			console.error('Error sending password reset:', error);
+			Alert.alert(
+				'Error',
+				error.message || 'Failed to send password reset email'
+			);
+		} finally {
+			setIsSendingReset(false);
+		}
+	};
 
 	return (
 		<ScrollView>
@@ -182,8 +192,16 @@ export default function Login({
 							secureTextEntry
 							value={password}
 							onChangeText={setPassword}
-
 						/>
+						<TouchableOpacity
+							onPress={() => {
+								setResetEmail(email);
+								setShowForgotPasswordModal(true);
+							}}
+							style={styles.forgotPasswordButton}
+						>
+							<Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+						</TouchableOpacity>
 					</View>
 					<TouchableOpacity
 						style={styles.button}
@@ -200,11 +218,55 @@ export default function Login({
 				<View style={styles.SignUp}>
 					<Text>You don't have an account?</Text>
 					<TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-						<Text style={{ color: '#4F4789', fontWeight: 'bold' }}>
+						<Text style={{ color: '#7F56D9', fontWeight: 'bold' }}>
 							Sign Up
 						</Text>
 					</TouchableOpacity>
 				</View>
+
+				<Modal
+					visible={showForgotPasswordModal}
+					animationType="slide"
+					transparent={true}
+					onRequestClose={() => setShowForgotPasswordModal(false)}
+				>
+					<View style={styles.modalContainer}>
+						<View style={styles.modalContent}>
+							<Text style={styles.modalTitle}>Reset Password</Text>
+							<Text style={styles.modalText}>
+								Enter your email to receive a password reset link
+							</Text>
+							<TextInput
+								placeholder="Email"
+								style={styles.modalInput}
+								value={resetEmail}
+								onChangeText={setResetEmail}
+								autoCapitalize="none"
+								keyboardType="email-address"
+							/>
+							<View style={styles.modalButtonContainer}>
+								<TouchableOpacity
+									style={[styles.modalButton, styles.cancelButton]}
+									onPress={() => setShowForgotPasswordModal(false)}
+									disabled={isSendingReset}
+								>
+									<Text style={styles.modalButtonText}>Cancel</Text>
+								</TouchableOpacity>
+								<TouchableOpacity
+									style={[styles.modalButton, styles.resetButton]}
+									onPress={handleForgotPassword}
+									disabled={isSendingReset}
+								>
+									{isSendingReset ? (
+										<ActivityIndicator size="small" color="#fff" />
+									) : (
+										<Text style={styles.modalButtonText}>Send Reset</Text>
+									)}
+								</TouchableOpacity>
+							</View>
+						</View>
+					</View>
+				</Modal>
 			</View>
 		</ScrollView>
 	);
@@ -221,15 +283,18 @@ const styles = StyleSheet.create({
 		margin: 20,
 	},
 	image: {
+		shadowColor: '#000',
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 10,
 		width: 342,
 		height: 180,
 		marginBottom: 20,
 		borderRadius: 10,
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 4 },
-		shadowOpacity: 0.3,
-		shadowRadius: 5,
-		elevation: 5,
 		borderWidth: 2,
 		borderColor: '#4F4789',
 	},
@@ -248,7 +313,7 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		fontFamily: 'Poppins-Regular',
 		textAlign: 'center',
-		color: '#555',
+		color: '#535862',
 		fontStyle: 'italic',
 		marginBottom: 10,
 	},
@@ -259,14 +324,14 @@ const styles = StyleSheet.create({
 	label: {
 		fontSize: 14,
 		fontFamily: 'SFProDisplay-Regular',
-		color: '#555',
+		color: '#535862',
 		marginBottom: 5,
 	},
 	textInput: {
 		width: '100%',
 		height: 42,
 		borderWidth: 1,
-		borderColor: '#ccc',
+		borderColor: '#535862',
 		borderRadius: 8,
 		paddingHorizontal: 10,
 		backgroundColor: '#fff',
@@ -293,9 +358,76 @@ const styles = StyleSheet.create({
 		gap: 5,
 	},
 	errorText: {
-		color: 'red',
+		color: '#D92D20',
 		fontSize: 14,
 		marginBottom: 5,
 		textAlign: 'center',
+	},
+	forgotPasswordButton: {
+		alignSelf: 'flex-end',
+		marginTop: 5,
+	},
+	forgotPasswordText: {
+		color: '#7F56D9',
+		fontSize: 14,
+	},
+	modalContainer: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: 'rgba(0,0,0,0.5)',
+	},
+	modalContent: {
+		width: '80%',
+		height: '30%',
+		backgroundColor: 'white',
+		padding: 20,
+		borderRadius: 10,
+		elevation: 5,
+		justifyContent: 'center',
+	},
+	modalTitle: {
+		fontSize: 20,
+		fontWeight: 'bold',
+		marginBottom: 10,
+		color: '#4F4789',
+	},
+	modalText: {
+		fontSize: 16,
+		marginBottom: 20,
+		color: '#535862',
+	},
+	modalInput: {
+		width: '100%',
+		height: 60,
+		borderWidth: 1,
+		borderColor: '#535862',
+		borderRadius: 5,
+		paddingHorizontal: 10,
+		marginBottom: 20,
+		backgroundColor: '#fff',
+	},
+	modalButtonContainer: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+	},
+	modalButton: {
+		flex: 1,
+		padding: 10,
+		borderRadius: 5,
+		alignItems: 'center',
+		marginHorizontal: 10,
+	},
+	cancelButton: {
+		backgroundColor: '#E0E0E0',
+		flex: 1,
+		justifyContent: 'center',
+	},
+	resetButton: {
+		backgroundColor: '#4F4789',
+	},
+	modalButtonText: {
+		color: '#fff',
+		fontWeight: 'bold',
 	},
 });

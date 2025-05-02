@@ -74,6 +74,8 @@ export interface UserData {
 	avatarSvg: string;
 	categories?: Category[];
 	RecentTasks?: Task[];
+	id: string;
+	createdAt?: number;
 }
 
 export interface CurrentUser {

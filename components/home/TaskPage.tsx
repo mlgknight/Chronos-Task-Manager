@@ -7,27 +7,35 @@ import {
 	FlatList,
 	StyleSheet,
 	Image,
+	Modal,
 } from 'react-native';
 import { FIRE_STORE, FIREBASE_AUTH } from '../../FirebaseConfig';
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { Category } from '../../types';
+import { Chip } from 'react-native-paper';
+import { useUserData } from '../../hooks/UserDataContext';
+import { nanoid } from 'nanoid';
 
 export default function TaskPage() {
+	const { setUserData } = useUserData();
 	const [categories, setCategories] = useState<Category[]>([]);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [newCategoryName, setNewCategoryName] = useState('');
 	const [selectedCategory, setSelectedCategory] = useState<Category | null>(
 		null
-	); // Selected category or null
+	);
 	const [userId, setUserId] = useState<string | null>(null);
-	const [newTaskName, setNewTaskName] = useState(''); // State for new task name
+	const [newTaskName, setNewTaskName] = useState('');
+	const [isRemoving, setIsRemoving] = useState(false);
+	const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+	const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(
+		null
+	);
 
-	// Filter categories based on search query
 	const filteredCategories = categories.filter((category) =>
 		category.name.toLowerCase().includes(searchQuery.toLowerCase())
 	);
-
 
 	const fetchUserCategories = async (userId: string): Promise<void> => {
 		try {
@@ -35,46 +43,150 @@ export default function TaskPage() {
 			const userDoc = await getDoc(userDocRef);
 			if (userDoc.exists()) {
 				const userData = userDoc.data();
-				setCategories(userData.categories || []);
+				if (
+					JSON.stringify(categories) !== JSON.stringify(userData.categories)
+				) {
+					setCategories(userData.categories || []);
+				}
 			}
 		} catch (error) {
 			console.error('Error fetching user categories:', error);
 		}
 	};
 
-	console.log(selectedCategory);
+	const removeTask = async (taskId: string) => {
+		if (!selectedCategory || !userId) {
+			alert('No category selected or user not logged in!');
+			return;
+		}
+		try {
+			const updatedTasks = selectedCategory.tasks.filter(
+				(task) => task.id !== taskId
+			);
 
-	// Add a new category and push it to Firestore
+			const updatedCategory = {
+				...selectedCategory,
+				tasks: updatedTasks,
+			};
+
+			const updatedCategories = categories.map((category) =>
+				category.id === selectedCategory.id ? updatedCategory : category
+			);
+
+			const userDocRef = doc(FIRE_STORE, 'users', userId);
+			await updateDoc(userDocRef, {
+				categories: updatedCategories,
+			});
+
+			setCategories(updatedCategories);
+			setSelectedCategory(updatedCategory);
+
+			setUserData((prevUserData) => ({
+				...(prevUserData || {
+					name: '',
+					email: '',
+					photoURL: '',
+					avatarSvg: '',
+					RecentTasks: [],
+					id: '',
+				}),
+				categories: updatedCategories,
+			}));
+		} catch (error) {
+			console.error('Error removing task:', error);
+			alert('Failed to remove task. Please try again.');
+		}
+	};
+
+	const confirmDeleteCategory = (category: Category) => {
+		setCategoryToDelete(category);
+		setShowDeleteModal(true);
+	};
+
+	const removeCategory = async () => {
+		if (!userId || !categoryToDelete) {
+			alert('User not logged in or no category selected!');
+			return;
+		}
+		try {
+			const userDocRef = doc(FIRE_STORE, 'users', userId);
+			const userDoc = await getDoc(userDocRef);
+			if (userDoc.exists()) {
+				const userData = userDoc.data();
+				const updatedCategories = userData?.categories?.filter(
+					(category: Category) => category.id !== categoryToDelete.id
+				);
+
+				await updateDoc(userDocRef, {
+					categories: updatedCategories,
+				});
+
+				setCategories(updatedCategories || []);
+
+				setUserData((prevUserData) => ({
+					...(prevUserData || {
+						name: '',
+						email: '',
+						photoURL: '',
+						avatarSvg: '',
+						RecentTasks: [],
+						id: '',
+					}),
+					categories: updatedCategories,
+				}));
+			}
+		} catch (error) {
+			console.error('Error removing category:', error);
+			alert('Failed to remove category. Please try again.');
+		} finally {
+			setShowDeleteModal(false);
+			setCategoryToDelete(null);
+		}
+	};
+
 	const addCategory = async (name: string) => {
 		if (!userId) {
 			alert('User not logged in!');
 			return;
 		}
-        const newTask = {
-            id: Date.now().toString(),
-            task: newTaskName,
-            timeStamp: new Date().toISOString(),
-        };
+
+		const newTask = newTaskName.trim()
+			? {
+					id: nanoid(),
+					task: newTaskName.trim(),
+					timeStamp: new Date().toISOString(),
+			  }
+			: null;
 
 		const newCategory = {
-            id: Date.now().toString(),
-            tasks: [newTask],
+			id: new Date().toISOString() + name,
+			tasks: newTask ? [newTask] : [],
 			name,
 			color: getRandomColor(),
-            timeStamp: new Date().toISOString(),
+			timeStamp: new Date().toISOString(),
 		};
 
 		try {
-			// Update Firestore with the new category
 			const userDocRef = doc(FIRE_STORE, 'users', userId);
 			await updateDoc(userDocRef, {
 				categories: arrayUnion(newCategory),
 			});
 
-
-			// Update local state
 			setCategories([...categories, newCategory]);
+			setUserData((prevUserData) => ({
+				...(prevUserData || {
+					name: '',
+					email: '',
+					photoURL: '',
+					avatarSvg: '',
+					RecentTasks: [],
+					id: '',
+				}),
+				categories: [...(prevUserData?.categories || []), newCategory],
+			}));
+
 			setNewCategoryName('');
+			setNewTaskName('');
 		} catch (error) {
 			console.error('Error adding category:', error);
 			alert('Failed to add category. Please try again.');
@@ -88,9 +200,9 @@ export default function TaskPage() {
 		}
 
 		const newTask = {
-			id: Date.now().toString(), // Unique ID for the task
-			task: taskName, // Task name
-			timeStamp: new Date().toISOString(), // Optional: Add a timestamp
+			id: new Date().toISOString() + taskName,
+			task: taskName,
+			timeStamp: new Date().toISOString(),
 		};
 
 		const updatedCategory = {
@@ -104,20 +216,32 @@ export default function TaskPage() {
 			);
 
 			const userDocRef = doc(FIRE_STORE, 'users', userId);
-            await updateDoc(userDocRef, {
-                categories: updatedCategories,
-                    RecentTasks: [newTask, ...(await (await getDoc(userDocRef)).data()?.RecentTasks || [])],
-            });
+			await updateDoc(userDocRef, {
+				categories: updatedCategories,
+				RecentTasks: [
+					newTask,
+					...((await (await getDoc(userDocRef)).data()?.RecentTasks) || []),
+				],
+			});
 
 			setCategories(updatedCategories);
 			setSelectedCategory(updatedCategory);
+
+			setUserData((prevUserData) => {
+				if (!prevUserData) {
+					return null;
+				}
+				return {
+					...prevUserData,
+					categories: updatedCategories,
+				};
+			});
 		} catch (error) {
 			console.error('Error adding task:', error);
 			alert('Failed to add task. Please try again.');
 		}
 	};
 
-	// Generate a random color for new categories
 	const getRandomColor = () => {
 		const colors = ['#FF8552', '#4F4789', '#297373', '#E9D758', '#FF6F61'];
 		return colors[Math.floor(Math.random() * colors.length)];
@@ -134,12 +258,11 @@ export default function TaskPage() {
 				}
 			}
 		);
-		return unsubscribe;
+		return () => unsubscribe();
 	}, []);
 
 	return (
 		<View style={styles.container}>
-			{/* Search Bar */}
 			<TextInput
 				style={styles.searchBar}
 				placeholder="Search categories..."
@@ -147,7 +270,6 @@ export default function TaskPage() {
 				onChangeText={setSearchQuery}
 			/>
 
-			{/* Add Category */}
 			<View style={styles.addCategoryContainer}>
 				<TextInput
 					style={styles.input}
@@ -172,8 +294,8 @@ export default function TaskPage() {
 					<Text style={styles.addButtonText}>Add Category</Text>
 				</TouchableOpacity>
 			</View>
+			{categories.length === 0 && <Text>No Categories</Text>}
 
-			{/* Category List */}
 			<FlatList
 				data={filteredCategories}
 				keyExtractor={(item) => item.id}
@@ -183,17 +305,18 @@ export default function TaskPage() {
 						onPress={() => setSelectedCategory(item)}
 					>
 						<Text style={styles.categoryText}>{item.name}</Text>
-						<TouchableOpacity style={styles.deleteButton}>
+						<TouchableOpacity
+							onPress={() => confirmDeleteCategory(item)}
+							style={styles.deleteButton}
+						>
 							<Image
 								source={require('../../assets/images/remove.png')}
 								style={{ width: 25, height: 25 }}
-							></Image>
+							/>
 						</TouchableOpacity>
 					</TouchableOpacity>
 				)}
 			/>
-
-			{/* Tasks in Selected Category */}
 			{selectedCategory && (
 				<View style={styles.tasksContainer}>
 					<Text style={styles.tasksTitle}>
@@ -212,13 +335,29 @@ export default function TaskPage() {
 									justifyContent: 'space-between',
 								}}
 							>
-								<Text style={styles.taskText}>{item.task}</Text>
-								<TouchableOpacity style={styles.deleteButton}>
+								<TouchableOpacity
+									style={styles.deleteButton}
+									onPress={() => {
+										if (!isRemoving) {
+											setIsRemoving(true);
+											removeTask(item.id).finally(() => setIsRemoving(false));
+										}
+									}}
+								>
 									<Image
 										source={require('../../assets/images/remove.png')}
 										style={{ width: 25, height: 25 }}
-									></Image>
+									/>
 								</TouchableOpacity>
+								<Chip
+									textStyle={{ color: 'white' }}
+									style={[
+										styles.taskText,
+										{ backgroundColor: selectedCategory.color },
+									]}
+								>
+									{item.task}
+								</Chip>
 							</View>
 						)}
 					/>
@@ -229,13 +368,46 @@ export default function TaskPage() {
 							value={newTaskName}
 							onChangeText={setNewTaskName}
 							onSubmitEditing={(e) => {
-								addTaskToCategory(newTaskName);
+								if (newTaskName.trim().length === 0) {
+									alert('Task name cannot be empty!');
+									return;
+								}
+								addTaskToCategory(newTaskName.trim());
 								setNewTaskName('');
 							}}
 						/>
 					</View>
 				</View>
 			)}
+
+			<Modal
+				visible={showDeleteModal}
+				transparent={true}
+				animationType="slide"
+				onRequestClose={() => setShowDeleteModal(false)}
+			>
+				<View style={styles.modalContainer}>
+					<View style={styles.modalContent}>
+						<Text style={styles.modalText}>
+							Are you sure you want to delete this category?
+						</Text>
+						<View style={styles.modalButtons}>
+							<TouchableOpacity
+								style={styles.modalButtonCancel}
+								onPress={() => setShowDeleteModal(false)}
+							>
+								<Text style={styles.modalButtonText}>Cancel</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={styles.modalButtonConfirm}
+								onPress={removeCategory}
+							>
+								<Text style={styles.modalButtonText}>Delete</Text>
+							</TouchableOpacity>
+						</View>
+					</View>
+				</View>
+			</Modal>
 		</View>
 	);
 }
@@ -281,14 +453,15 @@ const styles = StyleSheet.create({
 	},
 	categoryItem: {
 		padding: 15,
-		borderBottomWidth: 1,
-		borderBottomColor: '#ddd',
+		borderBottomWidth: 10,
+		borderBottomColor: '#ffffff',
 		display: 'flex',
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 	},
 	categoryText: {
 		fontSize: 16,
+		color: 'white',
 	},
 	tasksContainer: {
 		marginTop: 20,
@@ -303,9 +476,49 @@ const styles = StyleSheet.create({
 	taskText: {
 		fontSize: 16,
 		marginBottom: 5,
+		width: '100%',
+		color: 'white',
 	},
 	deleteButton: {
 		padding: 10,
 		borderRadius: 5,
+	},
+	modalContainer: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+	},
+	modalContent: {
+		width: '80%',
+		backgroundColor: 'white',
+		padding: 20,
+		borderRadius: 10,
+		alignItems: 'center',
+	},
+	modalText: {
+		fontSize: 18,
+		marginBottom: 20,
+		textAlign: 'center',
+	},
+	modalButtons: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		width: '100%',
+	},
+	modalButtonCancel: {
+		backgroundColor: '#ccc',
+		padding: 10,
+		borderRadius: 5,
+		marginRight: 10,
+	},
+	modalButtonConfirm: {
+		backgroundColor: '#FF6F61',
+		padding: 10,
+		borderRadius: 5,
+	},
+	modalButtonText: {
+		color: 'white',
+		fontWeight: 'bold',
 	},
 });
